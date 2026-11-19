@@ -1,10 +1,14 @@
-# Sets sintéticos
+# Sets de casos
 
-Los generó y etiquetó **a ciegas** un agente separado, a partir de la consigna, el kit y `docs/decisiones.md`, sin acceso a `evaluar.py`.
+| Carpeta / archivos | Quién lo escribió | Rol |
+|---|---|---|
+| `casos_sinteticos.jsonl`, `clave_sinteticos.csv`, `notas.csv` (S001–S102) | Agente Claude ciego al código, con la spec | Desarrollo |
+| `holdout_*` (H001–H050) | El mismo agente, en una segunda tanda | Retenido de v0, medido una vez (90%); hoy es regresión |
+| `revision_codex/oculto*` (X01–X40) | Codex, ciego al código **y a la spec** | Retenido de v1, medido una vez (60%); hoy es regresión |
+| `revision_codex/repros_fase2.jsonl` (R01–R30) | Codex, después de leer el código | Contraejemplos. `repros_clave.csv` es el resultado esperado según su informe |
+| `revision_codex/REVIEW_codex.md` | Codex | Su informe completo, sin editar. Las rutas `C:\review-codex\` son de su entorno |
 
-| Archivos | Rol |
-|---|---|
-| `casos_sinteticos.jsonl`, `clave_sinteticos.csv`, `notas.csv` | Desarrollo (S001–S102). Se ajustó el evaluador contra este set |
-| `holdout_casos.jsonl`, `holdout_clave.csv`, `holdout_notas.csv` | Retenido (H001–H050). Medido una sola vez antes de ajustar: 90% exacto, kappa 0,79 |
-
-`notas*.csv` trae, para cada caso, la regla objetivo, la dificultad (obvio, borde o distractor) y la razón de la etiqueta. Única etiqueta cambiada en la adjudicación: S074 (ver `docs/proceso-ia.md`).
+Etiquetas cambiadas en la adjudicación, con su motivo en `docs/proceso-ia.md`:
+- S074: string frente a número.
+- H033: cuenta trazable.
+- X18: en `oculto_clave_adjudicada.csv` queda como falla y se conserva la clave original de Codex.

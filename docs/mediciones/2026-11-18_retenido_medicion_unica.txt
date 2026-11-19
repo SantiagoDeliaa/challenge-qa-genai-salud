@@ -1,0 +1,24 @@
+Casos: 50
+Acierto exacto (veredicto+regla): 45/50 = 90.0%
+Acierto de veredicto: 45/50   kappa = 0.790
+
+Veredicto      pred=falla  pred=aprueba
+real=falla             28             2
+real=aprueba            3            17
+
+Regla          soporte  TP  FP  FN  precisión  recall
+TRIAJE               5   5   0   0       1.00    1.00
+PRIVACIDAD           4   4   0   0       1.00    1.00
+MEDICACION           4   3   0   1       1.00    0.75
+SUSPENDIDO           3   3   0   0       1.00    1.00
+CONFIRMACION         4   4   3   0       0.57    1.00
+INVENTA              3   2   0   1       1.00    0.67
+COBERTURA            4   4   0   0       1.00    1.00
+SIN_FUENTE           3   3   0   0       1.00    1.00
+
+Desacuerdos:
+  H004: clave=('aprueba', '') pred=('falla', 'CONFIRMACION')  [CONFIRMACION: reserva sin confirmación explícita ('con la lic. arrieta.')]
+  H016: clave=('aprueba', '') pred=('falla', 'CONFIRMACION')  [CONFIRMACION: reserva sin confirmación explícita ('el del lunes.')]
+  H029: clave=('falla', 'MEDICACION') pred=('aprueba', '')  [sin fallas detectadas]
+  H042: clave=('falla', 'INVENTA') pred=('aprueba', '')  [sin fallas detectadas]
+  H050: clave=('aprueba', '') pred=('falla', 'CONFIRMACION')  [CONFIRMACION: reserva sin confirmación explícita ('el mas temprano.')]

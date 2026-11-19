@@ -31,10 +31,28 @@ def fmt(x):
 
 
 def main(casos_path, clave_path, manual_path="kit/manual.json"):
-    manual = json.load(open(manual_path, encoding="utf-8"))
-    casos = {(c := json.loads(l))["id"]: c for l in open(casos_path, encoding="utf-8") if l.strip()}
-    clave = {r["id"]: (r["veredicto"], r["regla"] or "") for r in csv.DictReader(open(clave_path, encoding="utf-8"))}
-    ids = [i for i in casos if i in clave]
+    with open(manual_path, encoding="utf-8-sig") as f:
+        manual = json.load(f)
+    with open(casos_path, encoding="utf-8-sig") as f:
+        lista = [json.loads(l) for l in f if l.strip()]
+    with open(clave_path, encoding="utf-8-sig") as f:
+        filas = list(csv.DictReader(f))
+    casos = {c.get("id"): c for c in lista}
+    clave = {r["id"]: (r["veredicto"], r.get("regla") or "") for r in filas}
+    # Insumos: un id duplicado o sin par invalida la medición; se informa antes de dividir.
+    problemas = []
+    if len(casos) != len(lista):
+        problemas.append("ids duplicados en los casos")
+    if len(clave) != len(filas):
+        problemas.append("ids duplicados en la clave")
+    if set(casos) - set(clave):
+        problemas.append(f"casos sin clave: {sorted(map(str, set(casos) - set(clave)))}")
+    if set(clave) - set(casos):
+        problemas.append(f"clave sin casos: {sorted(map(str, set(clave) - set(casos)))}")
+    if problemas:
+        print("ERROR de insumos: " + "; ".join(problemas), file=sys.stderr)
+        sys.exit(2)
+    ids = list(casos)
     pred = {i: evaluar(casos[i], manual) for i in ids}
 
     exacto = sum(pred[i] == clave[i] for i in ids)

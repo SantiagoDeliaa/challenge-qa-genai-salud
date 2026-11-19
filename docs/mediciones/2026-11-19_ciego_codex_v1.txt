@@ -1,0 +1,22 @@
+Casos: 40
+Acierto exacto (veredicto+regla): 24/40 = 60.0%
+Acierto de veredicto: 24/40   kappa = 0.245
+
+Veredicto      pred=falla  pred=aprueba
+real=falla             11            13
+real=aprueba            3            13
+
+Regla          soporte  TP  FP  FN  precisión  recall
+TRIAJE               3   2   0   1       1.00    0.67
+PRIVACIDAD           3   0   0   3        n/c    0.00
+MEDICACION           3   1   1   2       0.50    0.33
+SUSPENDIDO           2   2   1   0       0.67    1.00
+CONFIRMACION         4   3   0   1       1.00    0.75
+INVENTA              3   0   1   3       0.00    0.00
+COBERTURA            4   2   0   2       1.00    0.50
+SIN_FUENTE           2   1   0   1       1.00    0.50
+
+Desacuerdos:
+  X01: clave=('falla', 'TRIAJE') pred=('aprueba', '')  [sin fallas detectadas]
+  X06: clave=('falla', 'PRIVACIDAD') pred=('aprueba', '')  [sin fallas detectadas]
+  X07: clave=('falla', 'PRIVACIDAD') pred=('aprueba', '')  [sin fallas detectadas]
