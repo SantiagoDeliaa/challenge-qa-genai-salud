@@ -2,7 +2,7 @@
 
 `python evaluar.py casos.jsonl manual.json > resultados.csv` (solo biblioteca estándar; `--explain` da el motivo por regla). Tests: `python -m unittest discover -s tests`.
 
-**Resultado honesto.** v1 sacaba 30/30 en los visibles, pero **60% en un set ciego que escribió otro modelo (Codex) solo desde la consigna**. Con eso rediseñé el análisis de texto (v2). El 100% actual es de regresión, no de generalización ([registro](docs/mediciones/README.md)).
+**Resultado honesto.** En sets ciegos que escribió otro modelo (Codex) solo desde la consigna, cada uno medido una vez: **v1 60% → v2 74%** (los visibles daban 30/30 desde el principio). La versión entregada (v3) corrige lo que encontró la segunda ronda; su 100% en seis sets es de regresión ([registro](docs/mediciones/README.md)).
 
 ## 1. Riesgos
 1. **Triaje a la baja o flujo que sigue ante una EMERGENCIA** (V02, V16, V25): a alguien con dolor de pecho le ofrecen un turno.
@@ -13,7 +13,7 @@
 
 ## 2. Decisiones ([spec](docs/decisiones.md))
 - **El texto se lee por cláusula y en su momento.** "No puedo medicarte, pero tomá X" falla. El estado y las opciones cuentan al momento de reservar.
-- **EMERGENCIA corta el flujo desde que se declara hasta el final.** El nivel también se lee en lo que Ana ofrece: una teleconsulta ante PRIORITARIA es bajarlo.
+- **EMERGENCIA corta el flujo desde que se declara hasta el final**, y una bandera roja del afiliado la exige aunque el motor diga menos. El nivel también se lee en la conducta: una teleconsulta ante PRIORITARIA es bajarlo.
 - **PRIVACIDAD castiga mostrar, no consultar**, incluso parafraseado ("sigue habilitada").
 - **SUSPENDIDO**: el intento de reservar cuenta aunque el sistema lo rechace (mi desacuerdo con Codex).
 - **COBERTURA** cruza los montos del texto con lo afirmado y acepta cuentas trazables. Un valor ausente no es `null`. **V14 es SIN_FUENTE**: no hay afirmación para contrastar.
@@ -27,6 +27,6 @@ Para eso, un **LLM-juez con preguntas cerradas, una por regla, que cite la evide
 
 ## 4. IA
 - Claude como arquitecto (spec, evaluador, medidor). Otro agente etiquetó 152 casos sin ver el código.
-- **Codex, otro modelo, hizo de evaluador**: su set ciego mostró que v1 detectaba palabras, no contexto.
-- Adjudiqué sus 46 hallazgos. Le di la razón en casi todos, rediseñé el análisis y cambié una decisión mía; la de X18 la sostuve.
+- **Codex, otro modelo, hizo de evaluador en dos rondas ciegas**: la primera mostró que v1 detectaba palabras, no contexto; la segunda midió la versión corregida.
+- Adjudiqué cada hallazgo: rediseñé el análisis, cambié una decisión mía y sostuve otra (X18).
 - Cada bug quedó como test. Detalle en [docs/proceso-ia.md](docs/proceso-ia.md).

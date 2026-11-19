@@ -24,6 +24,7 @@
 | Desarrollo, v0 | 95/102 | 7 bugs de texto: negaciones lejanas, "suspendid**a**", "el de la tarde", "no pude…, pero hay turno" |
 | Retenido propio, v0 | 45/50 (90%) | 5 bugs más: días con fecha, "el más temprano", "te puede ayudar" |
 | **Ciego de Codex, v1** | **24/40 (60%), kappa 0,25** | **Un problema de diseño, no de casos sueltos** |
+| **Ciego de Codex ronda 2, v2** | **37/50 (74%), kappa 0,48** | Paráfrasis no contempladas, diálogo fino y banderas rojas que el motor no marcó |
 
 **El hallazgo de Codex.** Las reglas de texto detectaban **si aparecía una palabra**, no **qué se decía, a quién y cuándo**. Algunos ejemplos:
 - un "no puedo" anulaba toda la oración ("No puedo medicarte, pero podés tomar loratadina" aprobaba);
@@ -49,9 +50,19 @@ Además: robustez ante entradas rotas, CSV correcto, rendimiento lineal (20.000 
 - **Cambié una decisión mía por su crítica**: ahora acepto las cuentas trazables (H033 y R25). Antes las rechazaba por literalidad.
 - **Mi validación encontró un bug más**: mientras escribía los tests de regresión, una variante de X07 ("solo puedo decirte **que** le suspendieron…") mostró que esa frase se tomaba como negativa.
 
+## Ronda 2: medir la versión publicada
+
+Con la v2 subida, abrí una **sesión nueva de Codex** que no había leído el código, la spec ni los sets previos. Escribió 50 casos solo desde la consigna, cerró la clave (con hash) y corrió el script una vez: **74%**. Coincidí con su adjudicación en los 13 desacuerdos. Ninguno era de diseño; fueron:
+- **paráfrasis**: "yo iría con", "media tableta", "sesenta días", "las cinco y veinticinco", "el del 21", "el próximo día hábil al cierre", "pasame su fecha de nacimiento";
+- **conducta**: URGENCIA con "dentro de cuatro horas", y una negativa de cobertura sin cita;
+- **diálogo**: confirmar que conoce la sede y postergar el horario no es confirmar el turno, y una repregunta legítima no tiene por qué informar nivel;
+- **una capacidad que faltaba**: las banderas rojas en el texto del afiliado cuando el motor no las marca.
+
+Los corregí con reglas generales (v3) y cada patrón quedó como test.
+
 ## Qué número creer
 
-El **60%** es la estimación honesta de cómo generalizaba v1. El 100% actual sobre los cinco sets es regresión: se ajustó contra todos ellos. Para v2 no tengo un número de generalización. El paso siguiente es pedirle al revisor de otra familia un **segundo set ciego**, medirlo una vez y publicarlo tal cual.
+Los números honestos son los de generalización independiente: **60% (v1) → 74% (v2)**. El 100% actual sobre los seis sets es regresión. Para v3 no tengo un número independiente, y no lo voy a estimar: la cola de paráfrasis del texto libre es larga, y es justamente la parte que, en producción, le asignaría a un LLM-juez validado.
 
 ## Principios que apliqué (de mi experiencia evaluando agentes en producción)
 

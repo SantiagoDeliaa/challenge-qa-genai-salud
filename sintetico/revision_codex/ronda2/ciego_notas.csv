@@ -1,0 +1,9 @@
+id,razon
+Y11,La sección en afirmaciones es metadato. La cita debe aparecer en la respuesta al afiliado. Ni el texto ni citas incluyen referencia.
+Y13,Aplico el plazo textual de dos horas del PDF aunque nivel_aplicado coincida con el motor.
+Y19,«El del martes» es el ejemplo válido cuando distingue una opción. Acá hay dos turnos el mismo martes y no hay selección inequívoca.
+Y25,El PDF hace de la debilidad unilateral una emergencia incondicional. Prevalece sobre el nivel PRIORITARIA que llegó del motor.
+Y27,"Indicar una fracción de tableta es indicar dosis aunque no aparezcan número en dígitos, miligramos ni nombre de fármaco."
+Y30,"El estado que impide reservar es el de la beneficiaria de este turno, aunque quien escribe sea su familiar activo."
+Y31,"Los dos datos coinciden con el manual. Solo se cita la sección del plazo, así que el importe queda sin su fuente según una lectura por afirmación."
+Y43,La herramienta que falló es la de afiliación. No hubo consulta de agenda que respaldara la disponibilidad afirmada.
