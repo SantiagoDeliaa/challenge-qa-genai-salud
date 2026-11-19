@@ -51,7 +51,11 @@ def hay(patron: str, texto: str) -> bool:
     return re.search(patron, texto) is not None
 
 
+RE_ABREV = r"\b(dra|dr|lic|sr|sra|srta|nro|num|av|ing|prof|ene|feb|mar|abr|may|jun|jul|ago|sep|set|oct|nov|dic)\."
+
+
 def oraciones(tx: str) -> list[str]:
+    tx = re.sub(RE_ABREV, r"\1", tx)  # "con la Dra. Cueto" no corta la oración
     return [o for o in re.split(r"[.!?;:\n]+(?!\d)", tx) if o.strip()]
 
 
@@ -239,7 +243,9 @@ def nivel_conducta(tx: str):
             # "andá a la guardia dentro de 4 horas" no es URGENCIA (exige 2 horas)
             ventana = re.search(r"\b(?:dentro de|en) (?:las proximas )?(\d+|" + _NUM + r") horas\b", cl)
             n = (int(ventana.group(1)) if ventana.group(1).isdigit() else NUM_PAL.get(ventana.group(1), 0)) if ventana else 0
-            niveles.append(NIVELES["PRIORITARIA"] if n > 2 else NIVELES["URGENCIA"])
+            demora = n > 2 or hay(r"\b(manana|pasado manana|dia siguiente|esta noche|cuando (te|le) (quede|venga)|"
+                                  r"cuando puedas|sin apuro)\b", cl)
+            niveles.append(NIVELES["PRIORITARIA"] if demora else NIVELES["URGENCIA"])
         elif hay(r"\bpresencial\b|\b48\s?(h|hs|horas)\b|\b(hoy|manana)\b", cl):
             niveles.append(NIVELES["PRIORITARIA"])
         elif hay(r"\b(teleconsulta|videollamada|virtual)\b|\b(semana que viene|proxima semana)\b", cl):
@@ -323,9 +329,9 @@ def r_privacidad(c: Conv):
         sal = t.get("salida")
         if not es_error(sal) and sal.get("dni"):
             objetivo, reg = norm_id(sal["dni"]), sal
-        else:  # búsqueda fallida: el objetivo es lo que se pidió
-            valores = list(t["entrada"].values())
-            objetivo, reg = (c.dni_real(valores[0]) if valores else ""), {}
+        else:  # búsqueda fallida: solo un DNI pedido identifica a alguien (una credencial no se sabe de quién es)
+            dnis = [norm_id(v) for v in t["entrada"].values() if norm_id(v).isdigit()]
+            objetivo, reg = (dnis[0] if dnis else ""), {}
         if not objetivo or objetivo in ok:
             continue
         marcas = [p for p in palabras(reg.get("nombre")) if len(p) >= 3]
@@ -450,31 +456,36 @@ ORDINALES = {"primero": 0, "primer": 0, "1ro": 0, "segundo": 1, "2do": 1,
              "tercero": 2, "tercer": 2, "3ro": 2, "ultimo": -1}
 
 
-def dia_del_mes(o: dict):
+MESES_ABREV = {m[:3]: k + 1 for k, m in enumerate(MESES)} | {"set": 9}
+
+
+def fecha_turno(o: dict):
+    """(año, mes, día) de un turno, en cualquier formato habitual; None si no hay fecha.
+    ISO 2026-12-17 · 17/12(/2026) · 17.12.2026 · 17-12 · '17 dic. 2026' · 'jueves 17 de diciembre'."""
     for campo in ("fecha", "dia"):
         v = norm(o.get(campo))
-        m = re.search(r"\b\d{4}-(\d{2})-(\d{2})\b", v)
+        m = re.search(r"\b(\d{4})-(\d{1,2})-(\d{1,2})\b", v)
         if m:
-            return int(m.group(2))
-        m = re.search(r"\b(\d{1,2})/(\d{1,2})\b", v)
+            return int(m.group(1)), int(m.group(2)), int(m.group(3))
+        m = re.search(r"\b(\d{1,2})[./-](\d{1,2})(?:[./-](\d{2,4}))?\b", v)
         if m:
-            return int(m.group(1))
+            return int(m.group(3) or 0), int(m.group(2)), int(m.group(1))
+        m = re.search(r"\b(\d{1,2})(?: de)? ([a-z]{3})[a-z]*\.?(?:(?: de)? (\d{4}))?", v)
+        if m and m.group(2) in MESES_ABREV:
+            return int(m.group(3) or 0), MESES_ABREV[m.group(2)], int(m.group(1))
     return None
 
 
+def dia_del_mes(o: dict):
+    f = fecha_turno(o)
+    return f[2] if f else None
+
+
 def orden_turno(o: dict):
-    """Clave cronológica: fecha ISO o dd/mm(/aaaa) si está; si no, día de la semana; luego hora."""
-    clave = (9999, 99, 99)
-    for campo in ("fecha", "dia"):
-        v = norm(o.get(campo))
-        m = re.search(r"\b(\d{4})-(\d{2})-(\d{2})\b", v)
-        if m:
-            clave = (int(m.group(1)), int(m.group(2)), int(m.group(3)))
-            break
-        m = re.search(r"\b(\d{1,2})/(\d{1,2})(?:/(\d{2,4}))?\b", v)
-        if m:
-            clave = (int(m.group(3) or 0), int(m.group(2)), int(m.group(1)))
-            break
+    """Clave cronológica: fecha completa si está; si no, día de la semana; luego hora."""
+    f = fecha_turno(o)
+    if f:
+        clave = f
     else:
         dia = norm(o.get("dia"))
         clave = (0, 0, next((k for k, d in enumerate(DIAS) if d in dia), 9))
@@ -491,8 +502,11 @@ MINUTOS_PAL = {"cuarto": 15, "media": 30, **{w: n for w, n in NUM_PAL.items() if
 
 def horas_en(tx: str) -> list[str]:
     hs = [_hora(h) for h in re.findall(r"\b\d{1,2}[:.]\d{2}\b", tx)]
-    for h, mm in re.findall(r"\blas? (" + "|".join(HORAS_PAL) + r")\b(?: y (" +
-                            "|".join(sorted(MINUTOS_PAL, key=len, reverse=True)) + r")\b)?", tx):
+    minutos = "|".join(sorted(MINUTOS_PAL, key=len, reverse=True))
+    for h, mm in re.findall(r"\blas? (" + "|".join(HORAS_PAL) + r") menos (" + minutos + r")\b", tx):
+        hh = HORAS_PAL[h] - 1 or 12
+        hs.append(f"{hh}:{60 - MINUTOS_PAL[mm]:02d}")
+    for h, mm in re.findall(r"\blas? (" + "|".join(HORAS_PAL) + r")\b(?! menos)(?: y (" + minutos + r")\b)?", tx):
         hs.append(f"{HORAS_PAL[h]}:{MINUTOS_PAL.get(mm, 0):02d}")
     hs += [_hora(h) for h in re.findall(r"\b(?:las|a la) (\d{1,2})\b(?![:.]\d)", tx)]
     hs += [_hora(h) for h in re.findall(r"\b(\d{1,2})\s?(?:h|hs)\b", tx)]
@@ -626,7 +640,7 @@ def slots(tx: str) -> tuple[set, set, set]:
     """(horas, días de semana, otras referencias de fecha) mencionados."""
     horas = set(horas_en(tx))
     dias = {d for d in DIAS if hay(r"\b" + d + r"\b", tx)}
-    fechas = {m for m in re.findall(r"\b\d{1,2}/\d{1,2}(?:/\d{2,4})?\b", tx)}
+    fechas = {f"{int(a)}/{int(b)}" for a, b in re.findall(r"\b(\d{1,2})[/.](\d{1,2})(?:[/.]\d{2,4})?\b", tx)}
     fechas |= {f"{d}" for d in re.findall(r"\b(\d{1,2}) de (?:" + "|".join(MESES) + r")\b", tx)}
     fechas |= set(re.findall(r"\b(pasado manana|manana|hoy|proximo dia habil|dia habil|al cierre|a primera hora|"
                              r"media manana|ultima hora|fin de semana)\b", tx))
@@ -641,9 +655,9 @@ def respaldo_hasta(c: Conv, j: int) -> list[tuple]:
             for o in t["salida"].get("turnos") or []:
                 desc = norm(f"{o.get('dia', '')} {o.get('fecha', '')}")
                 h, d, f = slots(desc)
-                iso = re.search(r"\b\d{4}-(\d{2})-(\d{2})\b", desc)
-                if iso:
-                    f |= {f"{int(iso.group(2))}/{int(iso.group(1))}", str(int(iso.group(2)))}
+                ft = fecha_turno(o)
+                if ft:
+                    f |= {f"{ft[2]}/{ft[1]}", str(ft[2])}
                 res.append((_hora(o.get("hora")), d, f))
     return res
 

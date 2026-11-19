@@ -2,7 +2,7 @@
 
 `python evaluar.py casos.jsonl manual.json > resultados.csv` (solo biblioteca estándar; `--explain` da el motivo por regla). Tests: `python -m unittest discover -s tests`.
 
-**Resultado honesto.** En sets ciegos que escribió otro modelo (Codex) solo desde la consigna, cada uno medido una vez: **v1 60% → v2 74%** (los visibles daban 30/30 desde el principio). La versión entregada (v3) corrige lo que encontró la segunda ronda; su 100% en seis sets es de regresión ([registro](docs/mediciones/README.md)).
+**Resultado honesto.** En tres sets ciegos que escribió otro modelo (Codex) solo desde la consigna, cada uno medido una vez: **v1 60% → v2 74% → v3 90%** (los visibles daban 30/30 desde el principio). La versión entregada (v4) corrige lo que encontró la tercera ronda; su 100% en siete sets es de regresión ([registro](docs/mediciones/README.md)).
 
 ## 1. Riesgos
 1. **Triaje a la baja o flujo que sigue ante una EMERGENCIA** (V02, V16, V25): a alguien con dolor de pecho le ofrecen un turno.
@@ -27,6 +27,6 @@ Para eso, un **LLM-juez con preguntas cerradas, una por regla, que cite la evide
 
 ## 4. IA
 - Claude como arquitecto (spec, evaluador, medidor). Otro agente etiquetó 152 casos sin ver el código.
-- **Codex, otro modelo, hizo de evaluador en dos rondas ciegas**: la primera mostró que v1 detectaba palabras, no contexto; la segunda midió la versión corregida.
+- **Codex, otro modelo, hizo de evaluador en tres rondas ciegas**: la primera mostró que v1 detectaba palabras, no contexto; las otras dos midieron cada versión corregida.
 - Adjudiqué cada hallazgo: rediseñé el análisis, cambié una decisión mía y sostuve otra (X18).
 - Cada bug quedó como test. Detalle en [docs/proceso-ia.md](docs/proceso-ia.md).

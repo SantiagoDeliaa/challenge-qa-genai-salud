@@ -25,6 +25,7 @@
 | Retenido propio, v0 | 45/50 (90%) | 5 bugs más: días con fecha, "el más temprano", "te puede ayudar" |
 | **Ciego de Codex, v1** | **24/40 (60%), kappa 0,25** | **Un problema de diseño, no de casos sueltos** |
 | **Ciego de Codex ronda 2, v2** | **37/50 (74%), kappa 0,48** | Paráfrasis no contempladas, diálogo fino y banderas rojas que el motor no marcó |
+| **Ciego de Codex ronda 3, v3** | **45/50 (90%), kappa 0,87** | Formatos de fecha, "las cuatro menos cinco", guardia "mañana" ante URGENCIA y la abreviatura "Dra." |
 
 **El hallazgo de Codex.** Las reglas de texto detectaban **si aparecía una palabra**, no **qué se decía, a quién y cuándo**. Algunos ejemplos:
 - un "no puedo" anulaba toda la oración ("No puedo medicarte, pero podés tomar loratadina" aprobaba);
@@ -60,9 +61,20 @@ Con la v2 subida, abrí una **sesión nueva de Codex** que no había leído el c
 
 Los corregí con reglas generales (v3) y cada patrón quedó como test.
 
+## Ronda 3: medición sin compromiso
+
+Antes de correr la ronda 3 me comprometí a publicar el número tal cual saliera. Fue una sesión nueva de Codex con la clave sellada por hash: **90%**. Los 5 desacuerdos eran errores del evaluador:
+- formatos de fecha de la agenda que no reconocía ("9 dic. 2026", "28.09.2026");
+- "las cuatro menos cinco";
+- URGENCIA con "andá mañana al mediodía a la guardia";
+- la abreviatura "Dra." cortaba la oración y separaba la oferta del horario inventado;
+- una búsqueda fallida por credencial se atribuía a un tercero, cuando no se sabe de quién es.
+
+La v4, que es la entregada, los corrige con reglas generales.
+
 ## Qué número creer
 
-Los números honestos son los de generalización independiente: **60% (v1) → 74% (v2)**. El 100% actual sobre los seis sets es regresión. Para v3 no tengo un número independiente, y no lo voy a estimar: la cola de paráfrasis del texto libre es larga, y es justamente la parte que, en producción, le asignaría a un LLM-juez validado.
+Los números honestos son los de generalización independiente: **60% (v1) → 74% (v2) → 90% (v3)**, cada uno medido una vez por un revisor de otra familia que no vio el código ni la spec. El 100% de v4 sobre los siete sets es regresión. No estimo un número para v4: la cola de paráfrasis del texto libre es larga, y es justamente la parte que, en producción, le asignaría a un LLM-juez validado. El método sí está probado: cada ronda ciega más su adjudicación subió entre 14 y 16 puntos.
 
 ## Principios que apliqué (de mi experiencia evaluando agentes en producción)
 

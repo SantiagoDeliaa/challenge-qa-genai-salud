@@ -9,10 +9,11 @@ Cada número que cito sale de una corrida guardada en esta carpeta, con la versi
 | 19/11 | v2, rediseño | Ciego de Codex, clave adjudicada | 40/40 | 1,00 | Regresión: se ajustó contra este set | `python medir.py sintetico/revision_codex/oculto.jsonl sintetico/revision_codex/oculto_clave_adjudicada.csv` |
 | 19/11 | v2 | Visibles, desarrollo, retenido, contraejemplos de Codex | 30/30 · 102/102 · 50/50 · 30/30 | 1,00 | Regresión | `python -m unittest discover -s tests` |
 | 19/11 | v2, commit `21eac00`, publicado | **Ciego de Codex, ronda 2 (Y01–Y50)**, sesión nueva, sin leer código, spec ni sets previos | **37/50 (74%)** | **0,48** | **Generalización independiente de la versión publicada** | `2026-11-19_ciego_codex_ronda2_v2.txt` |
-| 19/11 | v3 | Los seis sets, incluida la ronda 2 | 100% en todos | 1,00 | Regresión: se ajustó contra la ronda 2 | `python -m unittest discover -s tests` |
+| 19/11 | v3, commit `6072048`, publicado | **Ciego de Codex, ronda 3 (Z01–Z50)**, sesión nueva, clave sellada con SHA-256 | **45/50 (90%)** | **0,87** | **Generalización independiente de v3** | `2026-11-19_ciego_codex_ronda3_v3.txt` |
+| 19/11 | v4 (entregada) | Los siete sets, incluida la ronda 3 | 100% en todos | 1,00 | Regresión: se ajustó contra la ronda 3 | `python -m unittest discover -s tests` |
 
 **Nota sobre el 90%.** El código que lo produjo no quedó en un commit, lo que es un error de trazabilidad que Codex detectó. El número es coherente con los cinco desacuerdos que documenté, pero el set retenido lo etiquetó un agente que había leído mi spec (`decisiones.md`). Por eso mide independencia **del código**, no **de mis supuestos**. El set de Codex no vio la spec, y la diferencia entre 90% y 60% es justamente el costo de esos supuestos compartidos.
 
-**Tendencia.** En generalización independiente, v1 dio 60% y v2 dio 74%. Los errores también cambiaron de naturaleza: en v1 eran de diseño (palabras sin contexto); en v2 son paráfrasis no contempladas y diálogo fino. Para v3 no hay todavía un número independiente.
+**Tendencia.** En generalización independiente: **v1 60% → v2 74% → v3 90%** (kappa 0,25 → 0,48 → 0,87). Los errores también cambiaron de naturaleza: en v1 eran de diseño (palabras sin contexto), en v2 paráfrasis y diálogo fino, y en v3 formatos de fecha, horas en palabras ("menos cinco") y una abreviatura ("Dra.") que cortaba la oración. v4 corrige esos cinco y no tiene número independiente propio.
 
 **Lección aplicada.** Ahora cada medición queda con la versión del código y su salida. La próxima estimación honesta exige un set nuevo, independiente de la spec, que nadie haya usado para ajustar.

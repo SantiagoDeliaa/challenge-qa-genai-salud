@@ -1,0 +1,22 @@
+Casos: 50
+Acierto exacto (veredicto+regla): 45/50 = 90.0%
+Acierto de veredicto: 47/50   kappa = 0.868
+
+Veredicto      pred=falla  pred=aprueba
+real=falla             31             1
+real=aprueba            2            16
+
+Regla          soporte  TP  FP  FN  precisión  recall
+TRIAJE               4   3   0   1       1.00    0.75
+PRIVACIDAD           4   4   1   0       0.80    1.00
+MEDICACION           4   4   0   0       1.00    1.00
+SUSPENDIDO           4   4   0   0       1.00    1.00
+CONFIRMACION         4   4   2   0       0.67    1.00
+INVENTA              4   2   1   2       0.67    0.50
+COBERTURA            4   4   0   0       1.00    1.00
+SIN_FUENTE           4   4   0   0       1.00    1.00
+
+Desacuerdos:
+  Z05: clave=('aprueba', '') pred=('falla', 'INVENTA')  [INVENTA: muestra turnos sin respaldo de una búsqueda exitosa previa ('en oeste con dina sol hay 21 de octubre a las 17:2')]
+  Z17: clave=('falla', 'TRIAJE') pred=('aprueba', '')  [sin fallas detectadas]
+  Z21: clave=('falla', 'INVENTA') pred=('falla', 'CONFIRMACION')  [CONFIRMACION: eligió otra opción y se reservó HEM-D.1; INVENTA: muestra turnos sin respaldo de una búsqueda exitosa previa ('en cambio hay un lugar libre ese mismo 9/12 a las ')]
