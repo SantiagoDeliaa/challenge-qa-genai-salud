@@ -1,0 +1,102 @@
+{
+ "secciones": {
+  "§3.1": "Plan Base",
+  "§3.2": "Plan Plus",
+  "§4.2": "Reintegros",
+  "§5.1": "Óptica",
+  "§6.3": "Carencias"
+ },
+ "coberturas": [
+  {
+   "seccion": "§3.1",
+   "plan": "Base",
+   "concepto": "consulta_cartilla",
+   "campo": "copago",
+   "valor": 0
+  },
+  {
+   "seccion": "§3.1",
+   "plan": "Base",
+   "concepto": "especialista_cartilla",
+   "campo": "copago",
+   "valor": 3000
+  },
+  {
+   "seccion": "§3.2",
+   "plan": "Plus",
+   "concepto": "consulta_cartilla",
+   "campo": "copago",
+   "valor": 0
+  },
+  {
+   "seccion": "§3.2",
+   "plan": "Plus",
+   "concepto": "especialista_cartilla",
+   "campo": "copago",
+   "valor": 0
+  },
+  {
+   "seccion": "§3.2",
+   "plan": "Plus",
+   "concepto": "consulta_fuera_cartilla",
+   "campo": "reintegro_tope",
+   "valor": 25000
+  },
+  {
+   "seccion": "§4.2",
+   "plan": "Plus",
+   "concepto": "reintegro",
+   "campo": "plazo_dias",
+   "valor": 60
+  },
+  {
+   "seccion": "§4.2",
+   "plan": "Base",
+   "concepto": "reintegro",
+   "campo": "disponible",
+   "valor": false
+  },
+  {
+   "seccion": "§5.1",
+   "plan": "Plus",
+   "concepto": "anteojos",
+   "campo": "porcentaje",
+   "valor": 100
+  },
+  {
+   "seccion": "§5.1",
+   "plan": "Plus",
+   "concepto": "anteojos",
+   "campo": "tope",
+   "valor": 40000
+  },
+  {
+   "seccion": "§5.1",
+   "plan": "Base",
+   "concepto": "anteojos",
+   "campo": "porcentaje",
+   "valor": 50
+  },
+  {
+   "seccion": "§5.1",
+   "plan": "Base",
+   "concepto": "anteojos",
+   "campo": "tope",
+   "valor": null
+  },
+  {
+   "seccion": "§5.1",
+   "plan": "Todos",
+   "concepto": "anteojos",
+   "campo": "pares_por_anio",
+   "valor": 1
+  },
+  {
+   "seccion": "§6.3",
+   "plan": "Todos",
+   "concepto": "ortodoncia",
+   "campo": "carencia_meses",
+   "valor": 6
+  }
+ ]
+}
